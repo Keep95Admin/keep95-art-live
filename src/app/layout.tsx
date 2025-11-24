@@ -1,8 +1,8 @@
-﻿// src/app/layout.tsx — REMOVES THE UNWANTED TOP HEADER ENTIRELY
+﻿// src/app/layout.tsx — ADD THE TIMER HERE
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-// NavBar import removed on purpose — we don't want it here anymore
+import InactivityTimer from '@/components/InactivityTimer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,7 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* No NavBar here — header now lives only in page.tsx */}
+        {/* 4-MINUTE INACTIVITY TIMER — WORKS ON EVERY PAGE */}
+        <InactivityTimer />
         <main className="min-h-screen bg-black">{children}</main>
       </body>
     </html>
