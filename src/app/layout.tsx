@@ -1,8 +1,8 @@
-﻿// src/app/layout.tsx — ADD THE TIMER HERE
+﻿// src/app/layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import InactivityTimer from '@/components/InactivityTimer';
+import InactivityTimer from '@/components/InactivityTimer'; // ← MUST be here
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,9 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* 4-MINUTE INACTIVITY TIMER — WORKS ON EVERY PAGE */}
-        <InactivityTimer />
-        <main className="min-h-screen bg-black">{children}</main>
+        <InactivityTimer />   {/* ← MUST be here */}
+        {children}
       </body>
     </html>
   );

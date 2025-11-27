@@ -8,28 +8,28 @@ export default function InactivityTimer() {
   const router = useRouter();
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timer: NodeJS.Timeout;
 
     const resetTimer = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        router.push('/'); // Send back to landing page
-      }, 4 * 60 * 1000); // 4 minutes
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        router.replace('/'); // replace = no back-button loop
+      }, 4 * 60 * 1000); // 4 minutes in prod
+      // ↓↓↓ FOR TESTING: change to 10 seconds ↓↓↓
+      // }, 10 * 1000);
     };
 
-    const events = ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'];
-    events.forEach(event => window.addEventListener(event, resetTimer));
+    const events = ['load', 'mousemove', 'mousedown', 'click', 'scroll', 'keydown', 'touchstart', 'touchmove'];
 
-    // Start the timer on first load
-    resetTimer();
+    events.forEach((event) => window.addEventListener(event, resetTimer, { passive: true }));
 
-    // Cleanup
+    resetTimer(); // start immediately
+
     return () => {
-      clearTimeout(timeoutId);
-      events.forEach(event => window.removeEventListener(event, resetTimer));
+      clearTimeout(timer);
+      events.forEach((event) => window.removeEventListener(event, resetTimer));
     };
   }, [router]);
 
-  // This component renders nothing — it's invisible
   return null;
 }
