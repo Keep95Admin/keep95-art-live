@@ -25,13 +25,13 @@ export default function DropsHeaderClient() {
     if (!mounted) return;
 
     let timer: NodeJS.Timeout = setTimeout(() => {
-      router.replace('/login');
+      router.replace('/');
     }, inactivityTimeout);
 
     const resetTimer = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
-        router.replace('/login');
+        router.replace('/');
       }, inactivityTimeout);
     };
 
@@ -50,7 +50,7 @@ export default function DropsHeaderClient() {
   }, [mounted, router]);
 
   const handleExit = () => {
-    router.replace('/login');
+    router.replace('/');
   };
 
   if (!mounted) return null;

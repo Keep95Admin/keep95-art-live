@@ -2,11 +2,20 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/server';
 import DropsHeaderClient from '@/components/DropsHeaderClient';
+import { redirect } from 'next/navigation';
 
 export const revalidate = 60;
 
-export default async function DropsGallery() {
+export default async function DropsGallery({ searchParams }: { searchParams: Promise<{ guest?: string }> }) {
+  const resolvedSearchParams = await searchParams; // Await Promise
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isGuest = resolvedSearchParams.guest === 'true';
+
+  if (!user && !isGuest) {
+    redirect('/'); // Kick to home if no auth or guest param
+  }
+
   const { data: drops } = await supabase
     .from('drops')
     .select(`
