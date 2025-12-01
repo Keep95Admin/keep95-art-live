@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link'; // Added this import
+import Link from 'next/link';
 import { supabase } from '@/utils/supabase/client';
 
 export default function CustomerSignup() {
@@ -10,22 +10,25 @@ export default function CustomerSignup() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [enable2FA, setEnable2FA] = useState(false);
-  const [subscription, setSubscription] = useState('free'); // Options: free, basic, premium
+  const [subscription, setSubscription] = useState('free');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
     setLoading(true);
     setError(null);
 
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: { username, subscription, enable_2fa: enable2FA },
-      },
+      options: { data: { username, subscription, enable_2fa: enable2FA, role: 'consumer' } },
     });
 
     if (signupError) {
@@ -34,14 +37,13 @@ export default function CustomerSignup() {
       return;
     }
 
-    // MFA setup if enabled (enroll after signup)
+    // MFA setup if enabled
     if (enable2FA && data.user) {
       const { data: mfaData, error: mfaError } = await supabase.auth.mfa.enroll({ factorType: 'totp' });
       if (mfaError) {
         setError('2FA setup failed: ' + mfaError.message);
       } else {
-        // User would scan QR or enter secret; handle in UI if needed
-        console.log('MFA enrolled:', mfaData); // For dev; show QR in prod
+        console.log('MFA enrolled:', mfaData); // Handle QR in prod
       }
     }
 
@@ -77,6 +79,15 @@ export default function CustomerSignup() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
+          className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white"
+        />
+        
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           required
           className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white"
         />

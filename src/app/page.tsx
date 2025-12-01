@@ -1,7 +1,28 @@
 ﻿import Link from 'next/link';
 import ScannerLine from '@/components/ScannerLine';
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+
+    if (profile?.role === 'artist') {
+      redirect(`/artist/${user.id}`);
+    } else if (profile?.role === 'consumer') {
+      redirect('/drops');
+    } else {
+      redirect('/setup'); // If no role, to setup
+    }
+  }
+
   return (
     <main className="min-h-screen bg-black text-white flex flex-col">
       {/* Header */}
@@ -32,17 +53,17 @@ export default function Home() {
           Empowering artists and collectors to connect through digital drops with soul—fair, transparent, and built for the future.
         </p>
         <div className="space-y-12 text-center">
-          <Link href="/login" className="block">
+          <Link href="/artist-auth" className="block">
             <button className="bg-black text-white border-4 border-white px-12 py-4 rounded-full text-2xl font-black tracking-tighter hover:bg-white hover:text-black transition w-full max-w-md">
-              Artist Login
+              Artist Login / Signup
             </button>
           </Link>
-          <Link href="/customer-login" className="block">
+          <Link href="/customer-auth" className="block">
             <button className="bg-black text-white border-4 border-white px-12 py-4 rounded-full text-2xl font-black tracking-tighter hover:bg-white hover:text-black transition w-full max-w-md">
-              Collector Login
+              Collector Login / Signup
             </button>
           </Link>
-          <Link href="/drops?guest=true">
+          <Link href="/drops?guest=true" className="block">
             <button className="bg-black text-white border-4 border-white px-12 py-4 rounded-full text-2xl font-black tracking-tighter hover:bg-white hover:text-black transition w-full max-w-md">
               Guest Access
             </button>
