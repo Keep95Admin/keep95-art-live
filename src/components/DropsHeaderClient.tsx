@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import ScannerLine from './ScannerLine';
 import { supabase } from '@/utils/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 export default function DropsHeaderClient() {
   const router = useRouter();
   const inactivityTimeout = 30 * 60 * 1000; // 30 minutes
   const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -47,7 +48,7 @@ export default function DropsHeaderClient() {
       window.removeEventListener('click', resetTimer);
       window.removeEventListener('scroll', resetTimer);
     };
-  }, [mounted, router]);
+  }, [mounted, router, inactivityTimeout]);
 
   const handleExit = () => {
     router.replace('/');
