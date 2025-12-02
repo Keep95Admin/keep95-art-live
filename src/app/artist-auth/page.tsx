@@ -1,8 +1,7 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 
 export default function ArtistAuth() {
   const router = useRouter();
@@ -17,6 +16,7 @@ export default function ArtistAuth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const supabase = createClient();  // Create client here
     if (isSignup && password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -24,7 +24,6 @@ export default function ArtistAuth() {
     setLoading(true);
     setError(null);
     setMessage(null);
-
     if (isSignup) {
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
