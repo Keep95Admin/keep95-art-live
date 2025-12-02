@@ -7,16 +7,40 @@ import { User } from '@supabase/supabase-js';
 
 export default function Nav() {
   const [user, setUser] = useState<User | null>(null);
+  const [currentMode, setCurrentMode] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
+    supabase.auth.getSession().then(({ data }) => {
+      const sessionUser = data.session?.user ?? null;
+      setUser(sessionUser);
+
+      if (sessionUser) {
+        supabase.from('profiles')
+          .select('current_mode')
+          .eq('user_id', sessionUser.id)
+          .single()
+          .then(({ data }) => {
+            setCurrentMode(data?.current_mode || 'artist');
+          });
+      }
+    });
   }, []);
 
   const signOut = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
     window.location.href = '/';
+  };
+
+  const switchMode = async (mode: string) => {
+    const supabase = createClient();
+    await supabase.from('profiles')
+      .update({ current_mode: mode })
+      .eq('user_id', user?.id);
+
+    setCurrentMode(mode);
+    window.location.href = mode === 'artist' ? '/admin/dashboard' : '/drops';
   };
 
   return (
@@ -34,6 +58,16 @@ export default function Nav() {
               <Link href="/admin/dashboard" className="hover:text-gray-300 transition cursor-pointer">
                 Dashboard
               </Link>
+              {currentMode === 'artist' && (
+                <button onClick={() => switchMode('consumer')} className="hover:text-gray-300 transition cursor-pointer">
+                  Collect Mode
+                </button>
+              )}
+              {currentMode === 'consumer' && (
+                <button onClick={() => switchMode('artist')} className="hover:text-gray-300 transition cursor-pointer">
+                  Artist Mode
+                </button>
+              )}
               <button onClick={signOut} className="hover:text-gray-300 transition cursor-pointer">
                 Sign Out
               </button>
