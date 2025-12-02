@@ -9,6 +9,9 @@ export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+console.log('Server URL:', process.env.SUPABASE_URL);
+console.log('Server Key:', process.env.SUPABASE_ANON_KEY);
+
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
