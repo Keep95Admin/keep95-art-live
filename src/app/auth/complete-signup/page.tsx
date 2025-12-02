@@ -1,15 +1,16 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
-export default function CompleteSignup() {
+function CompleteSignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const supabase = createClient();  // Create here
+    const supabase = createClient(); // Create here
     const confirmUser = async () => {
       const token = searchParams.get('token');
       const email = searchParams.get('email');
@@ -54,5 +55,13 @@ export default function CompleteSignup() {
     <div className="min-h-screen bg-black text-white flex items-center justify-center">
       <p className="text-xl">Completing signup...</p>
     </div>
+  );
+}
+
+export default function CompleteSignup() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center"><p className="text-xl">Loading...</p></div>}>
+      <CompleteSignupContent />
+    </Suspense>
   );
 }
