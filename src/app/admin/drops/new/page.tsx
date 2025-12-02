@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { supabase } from '@/utils/supabase/client';
 import { useState, useEffect } from 'react';
@@ -100,7 +100,16 @@ export default function NewDrop() {
 
         <div>
           <label className="block font-bold mb-2">Return Policy</label>
-          <select value={policy} onChange={e => setPolicy(e.target.value as any)} className="w-full px-6 py-4 border-2 rounded-xl">
+          <select
+            value={policy}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              const value = e.target.value;
+              if (value === 'non_refundable' || value === '7_day_preview' || value === 'custom') {
+                setPolicy(value);
+              }
+            }}
+            className="w-full px-6 py-4 border-2 rounded-xl"
+          >
             <option value="non_refundable">Non-Refundable</option>
             <option value="7_day_preview">7-Day Preview</option>
             <option value="custom">Custom</option>
