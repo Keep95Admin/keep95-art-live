@@ -1,6 +1,5 @@
-﻿'use client';
-
-import { supabase } from '@/utils/supabase/client';
+'use client';
+import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
 
 export default function AuthPage() {
@@ -10,6 +9,7 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const supabase = createClient();  // Instantiate at runtime
     if (isSignUp) {
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) alert(error.message);
@@ -48,9 +48,9 @@ export default function AuthPage() {
         </button>
         <p className="text-center mt-6 text-sm">
           {isSignUp ? 'Have an account?' : "Don't have an account?"}{' '}
-          <button 
-            type="button" 
-            onClick={() => setIsSignUp(!isSignUp)} 
+          <button
+            type="button"
+            onClick={() => setIsSignUp(!isSignUp)}
             className="underline font-bold cursor-pointer"
           >
             {isSignUp ? 'Sign In' : 'Sign Up'}
