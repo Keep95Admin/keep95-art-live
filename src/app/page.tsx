@@ -3,6 +3,8 @@ import ScannerLine from '@/components/ScannerLine';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
+console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 export default async function Home() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
