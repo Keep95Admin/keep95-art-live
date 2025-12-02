@@ -14,11 +14,12 @@ export default function CompleteSignup() {
       const email = searchParams.get('email');
 
       if (token && email) {
-        const { data, error } = await supabase.auth.verifyOtp({
+        const { error } = await supabase.auth.verifyOtp({
           email,
           token,
           type: 'signup',
         });
+
         if (error) {
           router.replace('/?error=verification_failed');
         } else {
@@ -44,6 +45,7 @@ export default function CompleteSignup() {
         router.replace('/?error=invalid_link');
       }
     };
+
     confirmUser();
   }, [searchParams, router]);
 
