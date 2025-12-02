@@ -4,9 +4,9 @@ import { redirect } from 'next/navigation';
 export default async function DownloadPage({ params }: { params: Promise<{ dropId: string }> }) {
   const resolvedParams = await params; // Await Promise
   const { dropId } = resolvedParams;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-
   if (!user) redirect('/login');
 
   const { data: drop, error } = await supabase
@@ -37,7 +37,7 @@ export default async function DownloadPage({ params }: { params: Promise<{ dropI
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-12">
       <h1 className="text-7xl font-black">Download Ready</h1>
-      <p className="text-3xl">"{drop.title}"</p>
+      <p className="text-3xl">&quot;{drop.title}&quot;</p>
       <a
         href={signed.signedUrl}
         download
