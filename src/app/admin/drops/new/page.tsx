@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';  // Skip prerender, run dynamic
-
 import { createClient } from '@/utils/supabase/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -32,7 +30,7 @@ export default function NewDrop() {
     });
 
     return () => listener?.subscription.unsubscribe();
-  }, [router, supabase]);  // Add supabase to deps if needed
+  }, [router]);  // Removed supabase from deps
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
