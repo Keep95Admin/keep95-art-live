@@ -3,7 +3,7 @@ import ScannerLine from '@/components/ScannerLine';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
-export const dynamic = 'force-dynamic';  // Force dynamic rendering for root
+export const dynamic = 'force-dynamic';  // Force dynamic, skip prerender
 
 export default async function Home() {
   const supabase = await createClient();
