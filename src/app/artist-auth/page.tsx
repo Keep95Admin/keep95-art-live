@@ -1,7 +1,5 @@
 'use client';
 
-export const dynamic = 'force-dynamic';  // Force dynamic, skip prerender
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
@@ -19,41 +17,38 @@ export default function ArtistAuth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const supabase = createClient();  // Create client here
-    if (isSignup && password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    const supabase = createClient();
     setLoading(true);
     setError(null);
     setMessage(null);
+
     if (isSignup) {
-      const { data, error: signupError } = await supabase.auth.signUp({
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        setLoading(false);
+        return;
+      }
+      const { error: signupError } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { role: 'artist', username } },
       });
       if (signupError) {
         setError(signupError.message);
-      } else if (data.user) {
-        const response = await fetch('/api/artist-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: data.user.id, email, username }),
-        });
-        if (!response.ok) {
-          setError('Failed to create artist profile');
-        } else {
-          setMessage('Check your email to confirm signup.');
-        }
+        setLoading(false);
+        return;
       }
+      setMessage('Magic link sent—check your email to confirm.');
     } else {
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (loginError) setError(loginError.message);
-      else router.push('/artist/' + (await supabase.auth.getUser()).data.user?.id);
+      if (loginError) {
+        setError(loginError.message);
+      } else {
+        router.push('/artist/' + (await supabase.auth.getUser()).data.user?.id);
+      }
     }
     setLoading(false);
   };
