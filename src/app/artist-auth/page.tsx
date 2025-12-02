@@ -14,6 +14,12 @@ export default function ArtistAuth() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  const { data, error: signupError } = await supabase.auth.signUp(...);
+    if (signupError) {
+  console.log(signupError.message); // Log for debug
+  setError(signupError.message);
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const supabase = createClient();  // Create client here
