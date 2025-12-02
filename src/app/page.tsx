@@ -12,16 +12,19 @@ export default async function Home() {
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, current_mode')
       .eq('user_id', user.id)
       .single();
 
     if (profile?.role === 'artist') {
-      redirect(`/artist/${user.id}`);
+      if (profile.current_mode === 'consumer') {
+        redirect('/drops');
+      } else {
+        redirect(`/artist/${user.id}`);
+      }
     } else if (profile?.role === 'consumer') {
       redirect('/drops');
     }
-    // No redirect for no role—stays on landing
   }
 
   return (
