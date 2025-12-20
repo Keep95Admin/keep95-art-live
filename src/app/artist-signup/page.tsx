@@ -1,9 +1,8 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 
 export default function ArtistSignup() {
   const router = useRouter();
@@ -15,21 +14,18 @@ export default function ArtistSignup() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    const supabase = createClient();  // Create client here
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-
     setLoading(true);
     setError(null);
-
     const { error: signupError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { role: 'artist' } },
     });
-
     if (signupError) {
       setError(signupError.message);
     } else {
@@ -42,7 +38,6 @@ export default function ArtistSignup() {
     <main className="min-h-screen bg-black text-white flex items-center justify-center p-8">
       <form onSubmit={handleSignup} className="max-w-md w-full space-y-6">
         <h1 className="text-4xl font-black text-center mb-8">Artist Signup</h1>
-
         <input
           type="email"
           placeholder="Email"
@@ -51,7 +46,6 @@ export default function ArtistSignup() {
           required
           className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white"
         />
-
         <input
           type="password"
           placeholder="Password"
@@ -60,7 +54,6 @@ export default function ArtistSignup() {
           required
           className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white"
         />
-
         <input
           type="password"
           placeholder="Confirm Password"
@@ -69,9 +62,7 @@ export default function ArtistSignup() {
           required
           className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white"
         />
-
         {error && <p className="text-red-500 text-center">{error}</p>}
-
         <button
           type="submit"
           disabled={loading}
@@ -79,7 +70,6 @@ export default function ArtistSignup() {
         >
           {loading ? 'Signing Up...' : 'Sign Up'}
         </button>
-
         <p className="text-center text-sm">
           Already have an account?{' '}
           <Link href="/login" className="text-cyan-400 hover:underline">

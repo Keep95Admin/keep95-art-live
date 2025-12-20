@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/utils/supabase/client';
+import { supabase } from '@/utils/supabase/client';
 
 export default function CustomerSignup() {
   const router = useRouter();
@@ -25,7 +25,6 @@ export default function CustomerSignup() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
     const { data, error: signupError } = await supabase.auth.signUp({
       email,
       password,

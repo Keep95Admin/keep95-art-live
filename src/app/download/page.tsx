@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
 export default async function DownloadPage({ params }: { params: Promise<{ dropId: string }> }) {
-  const resolvedParams = await params;
+  const resolvedParams = await params; // Await Promise
   const { dropId } = resolvedParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

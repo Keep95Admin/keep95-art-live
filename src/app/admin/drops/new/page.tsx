@@ -1,8 +1,9 @@
 ﻿'use client';
 
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 
 export default function NewDrop() {
   const [policy, setPolicy] = useState<'non_refundable' | '7_day_preview' | 'custom'>('non_refundable');
@@ -13,6 +14,7 @@ export default function NewDrop() {
 
   useEffect(() => {
     const checkUser = async () => {
+      const supabase = createClient();
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user?.id) {
         setArtistId(session.user.id);
@@ -23,7 +25,8 @@ export default function NewDrop() {
 
     checkUser();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const supabase = createClient();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (session?.user?.id) setArtistId(session.user.id);
       else router.push('/login');
     });
@@ -39,6 +42,7 @@ export default function NewDrop() {
     const fileExt = file.name.split('.').pop() || 'file';
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
 
+    const supabase = createClient();
     const { error } = await supabase.storage
       .from('drops-assets')
       .upload(fileName, file);
@@ -60,6 +64,7 @@ export default function NewDrop() {
     if (!fileUrl) return alert('Upload the file first!');
     if (!artistId) return alert('Artist ID missing – refresh the page');
 
+    const supabase = createClient();
     const { error } = await supabase.from('drops').insert({
       title: formData.get('title') as string,
       price: Number(formData.get('price')),

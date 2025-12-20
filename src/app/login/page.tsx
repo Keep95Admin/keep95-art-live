@@ -1,7 +1,7 @@
 // src/app/login/page.tsx — WORKS WITH YOUR CURRENT client.ts
 'use client';
 
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -16,6 +16,7 @@ export default function ArtistLogin() {
     setLoading(true);
     setMessage('');
 
+    const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {

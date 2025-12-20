@@ -1,4 +1,4 @@
-// src/components/ScannerLine.tsx
+// src/components/ScannerLine.tsx ← THIS ONE WORKED
 import React from 'react';
 
 export default function ScannerLine() {

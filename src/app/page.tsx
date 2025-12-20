@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import ScannerLine from '@/components/ScannerLine';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';

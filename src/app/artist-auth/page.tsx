@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 
 export default function ArtistAuth() {
   const router = useRouter();
@@ -17,15 +17,17 @@ export default function ArtistAuth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSignup && password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
+    const supabase = createClient();
     setLoading(true);
     setError(null);
     setMessage(null);
 
     if (isSignup) {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        setLoading(false);
+        return;
+      }
       const { data, error: signupError } = await supabase.auth.signUp({
         email,
         password,
@@ -33,7 +35,10 @@ export default function ArtistAuth() {
       });
       if (signupError) {
         setError(signupError.message);
-      } else if (data.user) {
+        setLoading(false);
+        return;
+      }
+      if (data.user) {
         const response = await fetch('/api/artist-profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -41,17 +46,21 @@ export default function ArtistAuth() {
         });
         if (!response.ok) {
           setError('Failed to create artist profile');
-        } else {
-          setMessage('Check your email to confirm signup.');
+          setLoading(false);
+          return;
         }
       }
+      setMessage('Magic link sent—check your email to confirm.');
     } else {
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (loginError) setError(loginError.message);
-      else router.push('/artist/' + (await supabase.auth.getUser()).data.user?.id);
+      if (loginError) {
+        setError(loginError.message);
+      } else {
+        router.push('/artist/' + (await supabase.auth.getUser()).data.user?.id);
+      }
     }
     setLoading(false);
   };
