@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { supabase } from '@/utils/supabase/client';
 import { useState } from 'react';
