@@ -1,11 +1,12 @@
 'use client';
 
+import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { supabase } from '@/utils/supabase/client';
 
-export default function CustomerSignup() {
+export default function CollectorSignup() {
+  const supabase = createClient();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -54,7 +55,7 @@ export default function CustomerSignup() {
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center p-8">
       <form onSubmit={handleSignup} className="max-w-md w-full space-y-6">
-        <h1 className="text-4xl font-black text-center mb-8">Consumer Signup</h1>
+        <h1 className="text-4xl font-black text-center mb-8">Collector Signup</h1>
         
         <input
           type="email"
@@ -120,7 +121,7 @@ export default function CustomerSignup() {
         </button>
         
         <p className="text-center text-sm">
-          Already have an account? <Link href="/customer-login" className="text-cyan-400 hover:underline">Login</Link>
+          Already have an account? <Link href="/collector-login" className="text-cyan-400 hover:underline">Login</Link>
         </p>
       </form>
     </main>
