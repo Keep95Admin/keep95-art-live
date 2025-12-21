@@ -1,9 +1,12 @@
 'use client';
 
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function AuthPage() {
+  const supabase = createClient();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -17,7 +20,7 @@ export default function AuthPage() {
     } else {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) alert(error.message);
-      else window.location.href = '/admin/drops/new';
+      else router.push('/admin/drops/new');
     }
   };
 
