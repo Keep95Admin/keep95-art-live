@@ -1,10 +1,11 @@
-﻿'use client';
+'use client';
 
-import { supabase } from '@/utils/supabase/client';
+import { createClient } from '@/utils/supabase/client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function Nav() {
+  const supabase = createClient();
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
