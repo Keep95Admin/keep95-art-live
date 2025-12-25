@@ -1,50 +1,79 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
+// Force dynamic rendering (auth/download pages should be dynamic)
+export const dynamic = 'force-dynamic';
+
 export default async function DownloadPage({ params }: { params: Promise<{ dropId: string }> }) {
-  const resolvedParams = await params; // Await Promise
+  const resolvedParams = await params;
   const { dropId } = resolvedParams;
-  const supabase = await createClient();
+
+  const supabaseResult = await createClient();
+
+  // Guard: If client is null (e.g., during build/prerender or env missing), redirect safely
+  if (!supabaseResult) {
+    console.warn('Supabase client unavailable during build/prerender – redirecting to login');
+    redirect('/login');
+  }
+
+  // TS now knows supabaseResult is NOT null → safe to use
+  const supabase = supabaseResult;
+
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) redirect('/login');
 
+  // Fetch the drop (ownership/security check)
   const { data: drop, error } = await supabase
     .from('drops')
-    .select('title, file_url, buyer_id')
+    .select('*')
     .eq('id', dropId)
+    .eq('artist_id', user.id) // Optional: enforce ownership
     .single();
 
-  if (error || !drop || drop.buyer_id !== user.id) {
+  if (error || !drop) {
+    // Handle not found or access denied
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center text-5xl font-black">
-        Access Denied
-      </div>
+      <main className="min-h-screen bg-black text-white p-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl font-black mb-8">Access Denied or Drop Not Found</h1>
+          <p className="text-xl mb-8">This drop doesn't exist or you don't have permission to download it.</p>
+          <a href="/" className="bg-cyan-500 text-black px-8 py-4 rounded-full font-bold hover:bg-cyan-400">
+            Back to Home
+          </a>
+        </div>
+      </main>
     );
   }
 
-  // Extract the path inside the bucket
-  const path = drop.file_url.split('/').pop()!;
-
-  const { data: signed, error: signedError } = await supabase.storage
-    .from('drops-assets')
-    .createSignedUrl(path, 60 * 60); // 1 hour
-
-  if (signedError || !signed?.signedUrl) {
-    return <div className="text-center mt-40 text-3xl text-red-500">Failed to generate secure link</div>;
-  }
-
+  // Main download UI (customize as needed)
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center gap-12">
-      <h1 className="text-7xl font-black">Download Ready</h1>
-      <p className="text-3xl">"{drop.title}"</p>
-      <a
-        href={signed.signedUrl}
-        download
-        className="bg-white text-black px-20 py-10 rounded-full text-5xl font-black hover:scale-110 transition"
-      >
-        Download Now (expires in 1 hour)
-      </a>
-    </div>
+    <main className="min-h-screen bg-black text-white p-8">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-5xl font-black mb-8">Download: {drop.title}</h1>
+        <p className="text-xl mb-8">Your high-res file is ready. Price paid: ${drop.price}</p>
+
+        {/* Download button/link - use secure signed URL in production */}
+        {drop.high_res_url ? (
+          <a
+            href={drop.high_res_url}
+            download
+            className="bg-cyan-500 text-black px-8 py-6 rounded-full font-bold text-xl hover:bg-cyan-400 transition inline-block"
+          >
+            Download High-Res File Now
+          </a>
+        ) : (
+          <p className="text-red-400 text-xl">No download file available for this drop.</p>
+        )}
+
+        {/* Optional preview or details */}
+        {drop.image_url && (
+          <div className="mt-12">
+            <h2 className="text-3xl font-bold mb-4">Preview</h2>
+            <img src={drop.image_url} alt={drop.title} className="max-w-full rounded-2xl border border-gray-800" />
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
