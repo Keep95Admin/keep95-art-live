@@ -3,10 +3,24 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { redirect } from 'next/navigation';
 
+// Force dynamic rendering (recommended for auth-sensitive pages)
+export const dynamic = 'force-dynamic';
+
 export default async function ArtistDashboard({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const { id } = resolvedParams;
-  const supabase = await createClient();
+
+  const supabaseResult = await createClient();
+
+  // Guard: If createClient returned null (e.g., during build/prerender or env missing), redirect safely
+  if (!supabaseResult) {
+    console.warn('Supabase client unavailable – redirecting during build/prerender');
+    redirect('/'); // Safe fallback
+  }
+
+  // TS now knows supabaseResult is NOT null → safe to use
+  const supabase = supabaseResult;
+
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user || user.id !== id) {
@@ -23,17 +37,19 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
     <main className="min-h-screen bg-black text-white p-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-5xl font-black mb-8">Your Gallery Dashboard</h1>
-        <form action={async () => {
-          'use server';
-          const supabase = await createClient();
-          const { data: { user } } = await supabase.auth.getUser();
-          if (!user) redirect('/');
-
-          await supabase.from('profiles')
-            .update({ current_mode: 'consumer' })
-            .eq('user_id', user.id);
-          redirect('/drops');
-        }}>
+        <form
+          action={async () => {
+            'use server';
+            const supabaseAction = await createClient();
+            if (!supabaseAction) return; // Shouldn't happen at runtime
+            const { data: { user } } = await supabaseAction.auth.getUser();
+            if (!user) redirect('/');
+            await supabaseAction.from('profiles')
+              .update({ current_mode: 'consumer' })
+              .eq('user_id', user.id);
+            redirect('/drops');
+          }}
+        >
           <button className="bg-cyan-500 text-black p-4 rounded-full font-bold hover:bg-cyan-400 mb-8">
             Collect
           </button>
