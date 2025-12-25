@@ -23,7 +23,6 @@ export const createClient = async () => {
           try {
             cookieStore.set({ name, value, ...options });
           } catch (e) {
-            // Ignore set errors during static render (common in Server Components)
             console.warn('Cookie set ignored during build:', e);
           }
         },
@@ -31,7 +30,6 @@ export const createClient = async () => {
           try {
             cookieStore.delete({ name, ...options });
           } catch (e) {
-            // Ignore delete errors during static render
             console.warn('Cookie delete ignored during build:', e);
           }
         },
@@ -64,6 +62,3 @@ export const createAdminClient = async () => {
     }
   );
 };
-
-// Explicit re-export for TypeScript module resolution safety (helps in some Vercel/TS edge cases)
-export { createClient, createAdminClient };
