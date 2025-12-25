@@ -5,6 +5,8 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
+export const dynamic = 'force-dynamic';
+
 function CompleteSignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
