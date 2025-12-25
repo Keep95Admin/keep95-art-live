@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// Force dynamic rendering (dynamic drop pages with auth/DB queries should be dynamic)
+// Force dynamic rendering (dynamic drop pages with DB/auth should be dynamic)
 export const dynamic = 'force-dynamic';
 
 export default async function DropPage({ params }: { params: Promise<{ id: string }> }) {
@@ -12,13 +12,13 @@ export default async function DropPage({ params }: { params: Promise<{ id: strin
 
   const supabaseResult = await createClient();
 
-  // Guard: If client is null (e.g., during build/prerender or env missing), redirect safely
+  // Guard: If client is null (build/prerender or env missing), redirect safely
   if (!supabaseResult) {
     console.warn('Supabase client unavailable during build/prerender – redirecting to home');
     redirect('/');
   }
 
-  // TS now knows supabaseResult is NOT null → safe to use
+  // TS now knows supabaseResult is NOT null
   const supabase = supabaseResult;
 
   const { data: drop, error } = await supabase
@@ -28,7 +28,6 @@ export default async function DropPage({ params }: { params: Promise<{ id: strin
     .single();
 
   if (error || !drop) {
-    // Handle not found or error
     return (
       <main className="min-h-screen bg-black text-white p-8">
         <div className="max-w-7xl mx-auto text-center">
@@ -41,6 +40,9 @@ export default async function DropPage({ params }: { params: Promise<{ id: strin
       </main>
     );
   }
+
+  // Fix: artist is an array → safely access the first one (or fallback)
+  const artistName = drop.artist?.[0]?.name || 'Unknown Artist';
 
   return (
     <main className="min-h-screen bg-black text-white p-8">
@@ -69,7 +71,7 @@ export default async function DropPage({ params }: { params: Promise<{ id: strin
           <div className="space-y-8">
             <div>
               <p className="text-3xl font-bold text-cyan-400">${drop.price}</p>
-              <p className="text-xl mt-2">by {drop.artist?.name || 'Unknown Artist'}</p>
+              <p className="text-xl mt-2">by {artistName}</p>
             </div>
 
             <div>
