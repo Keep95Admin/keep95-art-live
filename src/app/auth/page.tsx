@@ -4,6 +4,8 @@ import { createClient } from '@/utils/supabase/client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default function AuthPage() {
   const supabase = createClient();
   const router = useRouter();
