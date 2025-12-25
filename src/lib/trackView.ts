@@ -1,10 +1,17 @@
-// src/lib/trackView.ts
 'use server';
-
 import { createClient } from '@/utils/supabase/server';
 
 export async function trackDropView(dropId: string) {
-  const supabase = await createClient();
+  const supabaseResult = await createClient();
+
+  // Guard: Skip tracking if client is null (happens during build/prerender or env missing)
+  if (!supabaseResult) {
+    console.warn('Supabase client unavailable – skipping view tracking');
+    return; // Safe early return during build
+  }
+
+  // TS now knows supabaseResult is NOT null → safe to use
+  const supabase = supabaseResult;
 
   const sessionId = crypto.randomUUID();
   const today = new Date().toISOString().split('T')[0];
