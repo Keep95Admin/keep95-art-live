@@ -4,7 +4,9 @@ import { createClient } from '@/utils/supabase/server';
 import DropsHeaderClient from '@/components/DropsHeaderClient';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
+
 
 export default async function DropsGallery({ searchParams }: { searchParams: Promise<{ guest?: string }> }) {
   const resolvedSearchParams = await searchParams; // Await Promise
