@@ -60,3 +60,31 @@ export default async function Home() {
           </nav>
         </div>
         <ScannerLine />
+      </div>
+      {/* Body */}
+      <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8">
+        <h1 className="text-8xl font-black tracking-tighter">Keep95.art</h1>
+        <p className="text-xl text-center max-w-xl">
+          Empowering artists and collectors to connect through digital drops with soul—fair, transparent, and built for the future.
+        </p>
+        <div className="space-y-12 text-center">
+          <Link href="/artist-auth" className="block">
+            <button className="bg-black text-white border-4 border-white px-12 py-4 rounded-full text-2xl font-black tracking-tighter hover:bg-white hover:text-black transition w-full max-w-md">
+              Artist Login / Signup
+            </button>
+          </Link>
+          <Link href="/collector-auth" className="block">
+            <button className="bg-black text-white border-4 border-white px-12 py-4 rounded-full text-2xl font-black tracking-tighter hover:bg-white hover:text-black transition w-full max-w-md">
+              Collector Login / Signup
+            </button>
+          </Link>
+          <Link href="/drops?guest=true" className="block">
+            <button className="bg-black text-white border-4 border-white px-12 py-4 rounded-full text-2xl font-black tracking-tighter hover:bg-white hover:text-black transition w-full max-w-md">
+              Guest Access
+            </button>
+          </Link>
+        </div>
+      </div>
+    </main>
+  );
+}
