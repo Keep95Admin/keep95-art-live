@@ -1,4 +1,5 @@
-Nothing is ever ran or tested locally. Everything is ran on the test space provided in Vercel so it's testing live. 
+This is how we’re operating. 
+Nothing is ever ran or tested locally. Everything is ran on the test space provided in Vercel so it's testing live using changes made in keep95-art-live. 
 Always read current file before suggesting changes.
 if you can't read a file tell me!
-Always make sure we don't do anything destructive to keep95-art-live
+Always make sure we don't do anything destructive to keep95-art it is our backup we can revert to if keep95-art-live is irreparrable.
