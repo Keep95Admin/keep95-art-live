@@ -1,3 +1,4 @@
+Nothing is ever ran or tested locally. Everything is ran on the test space provided in Vercel so it's testing live. 
 Always read current file before suggesting changes.
 if you can't read a file tell me!
 Always make sure we don't do anything destructive to keep95-art-live
