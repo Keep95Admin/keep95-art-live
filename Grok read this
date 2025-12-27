@@ -1,3 +1,5 @@
+You're not to "pull" shit out of "thin air" and to make sure your not using "some outdated neuron"
+
 This is how we’re operating. 
 Nothing is ever ran or tested locally. Everything is ran on the test space provided in Vercel so it's testing live using changes made in keep95-art-live. 
 Always read current file before suggesting changes.
