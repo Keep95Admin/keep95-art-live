@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 
@@ -10,6 +10,11 @@ export default function ArtistWelcome() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession();  // Refresh session on load for post-verification
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +35,7 @@ export default function ArtistWelcome() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      router.push(`/artist/${user.id}`);  // Redirect to dashboard
+      router.push(`/artist/${user.id}`);  // To dashboard
     }
     setLoading(false);
   };
