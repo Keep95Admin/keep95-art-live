@@ -28,30 +28,39 @@ export default function ArtistAuth() {
         setLoading(false);
         return;
       }
-      const { data, error: signupError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { role: 'artist', username } },
+
+      // Call API to create user + profile server-side
+      const response = await fetch('/api/artist-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, username, password }),
       });
-      if (signupError) {
-        setError(signupError.message);
+
+      if (!response.ok) {
+        const { error: apiError } = await response.json();
+        setError(apiError || 'Failed to create artist profile');
         setLoading(false);
         return;
       }
-      if (data.user) {
-        const response = await fetch('/api/artist-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: data.user.id, email, username }),
-        });
-        if (!response.ok) {
-          setError('Failed to create artist profile');
-          setLoading(false);
-          return;
-        }
+
+      // Auto-sign in the new user
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (loginError) {
+        setError(loginError.message);
+        setLoading(false);
+        return;
       }
-      setMessage('Magic link sent—check your email to confirm.');
+
+      // Redirect to artist page
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push(`/artist/${user.id}`);
+      }
     } else {
+      // Login remains the same
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -59,7 +68,10 @@ export default function ArtistAuth() {
       if (loginError) {
         setError(loginError.message);
       } else {
-        router.push('/artist/' + (await supabase.auth.getUser()).data.user?.id);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          router.push(`/artist/${user.id}`);
+        }
       }
     }
     setLoading(false);
