@@ -1,7 +1,8 @@
 // Add to relevant server actions or API routes, e.g., src/app/api/log-event/route.ts
 import { createClient } from '@/utils/supabase/server';
+import { NextRequest } from 'next/server';
 
-export async function POST(req) {
+export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response('Unauthorized', { status: 401 });
