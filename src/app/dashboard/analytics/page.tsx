@@ -11,11 +11,11 @@ export default async function AnalyticsPage() {
 
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('tier, role')  // Assuming role for artist check
+    .select('tier, current_mode')  // Use current_mode for artist check
     .eq('user_id', user.id)
     .single();
 
-  if (error || !profile || profile.role !== 'artist' || profile.tier === 'free') {
+  if (error || !profile || profile.current_mode !== 'artist' || profile.tier === 'free') {
     return (
       <div className="min-h-screen bg-black text-white p-8 text-center">
         <h1 className="text-4xl font-black mb-4">Access Denied</h1>
