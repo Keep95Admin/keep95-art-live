@@ -12,12 +12,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, message: 'Skipped during build' }, { status: 200 });
   }
 
-  // Check if user already exists by email
-  const { data: existingUser } = await supabase.auth.admin.listUsers({ filter: { email } });
+  // Get all users and find if email exists
+  const { data: usersData } = await supabase.auth.admin.listUsers();
+  const existingUser = usersData.users.find(u => u.email === email);
   let userId;
 
-  if (existingUser?.users?.length > 0) {
-    userId = existingUser.users[0].id;
+  if (existingUser) {
+    userId = existingUser.id;
     // Optional: If user exists but not artist, proceed to upsert profile
   } else {
     // Create new auth user
