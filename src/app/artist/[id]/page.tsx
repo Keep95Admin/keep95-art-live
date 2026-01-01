@@ -7,6 +7,9 @@ export default async function ArtistPage({ params }: { params: Promise<{ id: str
   const { id } = resolvedParams;
 
   const supabase = await createClient();
+  if (!supabase) {
+    return <div>Supabase client unavailable</div>;
+  }
 
   const { data: artist, error: artistError } = await supabase
     .from('artists')
