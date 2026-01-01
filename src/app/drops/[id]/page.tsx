@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { DropViewer } from '@/components/DropViewer';
+import Link from 'next/link';
 
 // Force dynamic rendering (dynamic drop pages with DB/auth should be dynamic)
 export const dynamic = 'force-dynamic';
