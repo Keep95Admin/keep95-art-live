@@ -2,34 +2,57 @@ import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/utils/supabase/server';
 
 export async function POST(request: Request) {
-  const { user_id, email, username } = await request.json();
+  const { email, username, password } = await request.json();
 
   const supabase = await createAdminClient();
 
   // Guard: If supabase is null (e.g., during build/prerender or env missing), return safe response
   if (!supabase) {
-    // During build, just return a dummy success (TS needs this for type safety)
-    // In production, this shouldn't happen since env is set
     console.warn('Admin client unavailable – skipping profile upsert during build');
     return NextResponse.json({ success: true, message: 'Skipped during build' }, { status: 200 });
   }
 
-  const { error } = await supabase
+  // Check if user already exists by email
+  const { data: existingUser } = await supabase.auth.admin.listUsers({ filter: { email } });
+  let userId;
+
+  if (existingUser?.users?.length > 0) {
+    userId = existingUser.users[0].id;
+    // Optional: If user exists but not artist, proceed to upsert profile
+  } else {
+    // Create new auth user
+    const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,  // Auto-confirm for simplicity; adjust if you want confirmation emails
+      user_metadata: { username },
+    });
+
+    if (createError) {
+      console.error('User creation error:', createError);
+      return NextResponse.json({ error: createError.message }, { status: 500 });
+    }
+
+    userId = newUser.user.id;
+  }
+
+  // Now upsert the profile with the valid user ID
+  const { error: upsertError } = await supabase
     .from('profiles')
     .upsert([
       {
-        id: user_id,
+        id: userId,
         email,
         username,
-        role: 'artist',
+        role: 'artist',  // Or 'current_mode': 'artist' if that's your column
         wallet_address: ''
       }
     ]);
 
-  if (error) {
-    console.error('Profile upsert error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (upsertError) {
+    console.error('Profile upsert error:', upsertError);
+    return NextResponse.json({ error: upsertError.message }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true }, { status: 200 });
+  return NextResponse.json({ success: true, user_id: userId }, { status: 200 });
 }
