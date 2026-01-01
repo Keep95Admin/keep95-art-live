@@ -1,13 +1,16 @@
-// Add to relevant server actions or API routes, e.g., src/app/api/log-event/route.ts
 import { createClient } from '@/utils/supabase/server';
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
+  if (!supabase) {
+    return new NextResponse('Supabase client not initialized', { status: 500 });
+  }
+
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return new Response('Unauthorized', { status: 401 });
+  if (!user) return new NextResponse('Unauthorized', { status: 401 });
 
   const { event_type, metadata } = await req.json();
   await supabase.from('analytics_events').insert({ user_id: user.id, event_type, metadata });
-  return new Response('Logged', { status: 200 });
+  return new NextResponse('Logged', { status: 200 });
 }
