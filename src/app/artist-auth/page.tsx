@@ -29,12 +29,12 @@ export default function ArtistAuth() {
         return;
       }
 
-      // Create user with verification email
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { username }
+          data: { username },
+          emailRedirectTo: `${window.location.origin}/artist/setup`  // Redirect verification to setup
         }
       });
 
@@ -51,7 +51,6 @@ export default function ArtistAuth() {
         return;
       }
 
-      // Call API to upsert profile
       const response = await fetch('/api/artist-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,7 +66,6 @@ export default function ArtistAuth() {
 
       setMessage('Check your email for the verification link.');
     } else {
-      // Login
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -77,7 +75,6 @@ export default function ArtistAuth() {
       } else {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          // Check if artist setup needed
           const { data: artist } = await supabase
             .from('artists')
             .select('id')
