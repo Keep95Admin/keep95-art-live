@@ -34,7 +34,7 @@ export default function ArtistAuth() {
         password,
         options: {
           data: { username },
-          emailRedirectTo: `${window.location.origin}/artist/setup`  // Redirect verification to setup
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,  // Use existing confirm route
         }
       });
 
