@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get('type') as EmailOtpType | null;
 
   const redirectTo = request.nextUrl.clone();
-  redirectTo.pathname = '/artist/welcome';  // Redirect to new welcome/login page
+  redirectTo.pathname = '/artist/welcome';  // Redirect to welcome/login page
   redirectTo.searchParams.delete('token_hash');
   redirectTo.searchParams.delete('type');
 
