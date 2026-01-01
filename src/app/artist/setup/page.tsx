@@ -13,8 +13,9 @@ export default function ArtistSetup() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const supabase = createClient();
+
     const checkUser = async () => {
-      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         router.push('/artist-auth');
@@ -23,18 +24,19 @@ export default function ArtistSetup() {
 
       const { data: profile } = await supabase.from('profiles').select('current_mode').eq('id', user.id).single();
       if (profile?.current_mode !== 'artist') {
-        setError('Access denied');
-        router.push('/');  // Or login
+        router.push('/');
         return;
       }
 
       const { data: artist } = await supabase.from('artists').select('id').eq('id', user.id).single();
       if (artist) {
         router.push(`/artist/${user.id}`);
+        return;
       }
 
       setLoading(false);
     };
+
     checkUser();
   }, [router]);
 
@@ -48,13 +50,19 @@ export default function ArtistSetup() {
     let profilePictureUrl = null;
     if (profilePicture) {
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('artist-pictures')  // Create this bucket if needed
+        .from('artist-pictures')  // Create bucket in Supabase if missing
         .upload(`${user.id}/${profilePicture.name}`, profilePicture);
+
       if (uploadError) {
-        setError('Upload failed: ' + uploadError.message);
+        setError(uploadError.message);
         return;
       }
-      profilePictureUrl = uploadData.path;  // Get public URL if needed
+
+      const { data: publicUrlData } = supabase.storage
+        .from('artist-pictures')
+        .getPublicUrl(uploadData.path);
+
+      profilePictureUrl = publicUrlData.publicUrl;
     }
 
     const { error: upsertError } = await supabase.from('artists').upsert({
@@ -71,8 +79,8 @@ export default function ArtistSetup() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+  if (error) return <div className="min-h-screen bg-black text-white flex items-center justify-center">{error}</div>;
 
   return (
     <main className="min-h-screen bg-black text-white flex items-center justify-center p-8">
@@ -90,7 +98,7 @@ export default function ArtistSetup() {
           placeholder="Bio"
           value={bio}
           onChange={(e) => setBio(e.target.value)}
-          className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white"
+          className="w-full p-4 bg-gray-900 border border-gray-700 rounded-full text-white h-32"
         />
         <input
           type="file"
