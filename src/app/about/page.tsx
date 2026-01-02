@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image'; // If logo is an image; adjust if SVG inline
 
 export default function AboutPage() {
   return (
@@ -8,8 +7,6 @@ export default function AboutPage() {
       <header className="relative bg-black border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="text-white font-black text-3xl tracking-tighter flex items-center">
-            {/* Logo - Adjust path if different; assuming public/logo.svg */}
-            <Image src="/logo.svg" alt="Keep95 Logo" width={40} height={40} className="mr-2" />
             Keep95.art
           </Link>
           <nav className="flex items-center gap-6">
