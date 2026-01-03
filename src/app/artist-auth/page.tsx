@@ -77,14 +77,14 @@ export default function ArtistAuth() {
         if (user) {
           const { data: profile } = await supabase
             .from('profiles')
-            .select('id')
+            .select('setup_complete')
             .eq('id', user.id)
             .single();
 
-          if (!profile) {
-            router.push('/artist/setup');
-          } else {
+          if (profile && profile.setup_complete) {
             router.push(`/artist/${user.id}`);
+          } else {
+            router.push('/artist/setup');
           }
         }
       }
