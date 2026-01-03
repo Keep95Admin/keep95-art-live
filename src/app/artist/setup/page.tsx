@@ -56,7 +56,7 @@ export default function ArtistSetup() {
     const updates = {
       bio,
       wallet_address: walletAddress,
-      ...(profilePicturePath && { profile_picture_url: profilePicturePath }),  // Store path, not URL
+      ...(profilePicturePath && { profile_picture_url: profilePicturePath }),
       setup_complete: true
     };
 
