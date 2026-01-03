@@ -36,17 +36,17 @@ export default async function ArtistNavBar() {
   }
 
   return (
-    <div className="relative">
-      <div className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-center relative"> {/* Centered logo */}
-        <Link href="/" className="text-white font-black text-4xl tracking-tighter">
+    <nav className="relative bg-black"> {/* Explicit bg-black */}
+      <div className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
+        <Link href="/" className="text-white font-black text-4xl tracking-tighter"> {/* Explicit text-white */}
           Keep95.art
         </Link>
         {user && (
-          <div className="absolute right-6 flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <form action={signOut}>
               <button
                 type="submit"
-                className="bg-red-600 text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-red-700 transition"
+                className="bg-red-600 text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-red-700 transition" {/* Explicit text-white */}
               >
                 Logout
               </button>
@@ -55,6 +55,6 @@ export default async function ArtistNavBar() {
         )}
       </div>
       <ScannerLine />
-    </div>
+    </nav>
   );
 }
