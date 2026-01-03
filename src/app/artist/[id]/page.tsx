@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import ArtistNavBar from '@/components/ArtistNavBar';
+import ArtistsNavBar from '@/components/ArtistsNavBar';
 
 export default async function ArtistDashboard({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -68,7 +68,7 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
 
   return (
     <>
-      <ArtistNavBar />
+      <ArtistsNavBar />
       <main className="min-h-screen bg-black text-white p-8 pt-24">
         <div className="max-w-4xl mx-auto">
           <Link href="/drops" className="text-cyan-400 hover:underline mb-8 inline-block">
