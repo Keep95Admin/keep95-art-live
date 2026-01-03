@@ -23,7 +23,7 @@ export default async function Home() {
       const { data: profile } = await supabase
         .from('profiles')
         .select('role, current_mode')
-        .eq('user_id', user.id)
+        .eq('id', user.id)  // Fixed column from 'user_id' to 'id'
         .single();
 
       if (profile?.role === 'artist') {
