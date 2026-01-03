@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import NavBar from '@/components/NavBar';
+import NewDropNavbar from '@/components/NewDrop-Navbar';
 
 export default function NewDrop() {
   const router = useRouter();
@@ -65,8 +65,8 @@ export default function NewDrop() {
 
   return (
     <>
-      <NavBar />
-      <main className="min-h-screen bg-black text-white flex items-center justify-center p-8 pt-24">  {/* Added pt-24 for navbar */}
+      <NewDropNavbar />
+      <main className="min-h-screen bg-black text-white flex items-center justify-center p-8 pt-24">
         <form onSubmit={handleSubmit} className="max-w-md w-full space-y-6">
           <h1 className="text-4xl font-black text-center mb-8">Create New Drop</h1>
           <input
