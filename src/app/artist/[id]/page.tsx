@@ -19,8 +19,8 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
   }
 
   const { data: profile, error: profileError } = await supabase
-    .from('profiles')  // Switched from 'artists' to 'profiles' for consistency
-    .select('id, username, profile_picture_url, bio')  // Removed alias to avoid TS inference issues
+    .from('profiles')
+    .select('id, username, profile_picture_url, bio')
     .eq('id', id)
     .single();
 
