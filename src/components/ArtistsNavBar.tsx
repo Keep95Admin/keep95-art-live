@@ -37,12 +37,12 @@ export default async function ArtistNavBar() {
 
   return (
     <div className="relative">
-      <div className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-center relative"> {/* Centered logo */}
         <Link href="/" className="text-white font-black text-4xl tracking-tighter">
           Keep95.art
         </Link>
         {user && (
-          <div className="flex items-center gap-4">
+          <div className="absolute right-6 flex items-center gap-4">
             <form action={signOut}>
               <button
                 type="submit"
