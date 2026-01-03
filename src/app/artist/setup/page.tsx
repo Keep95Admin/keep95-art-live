@@ -23,7 +23,8 @@ export default function ArtistSetup() {
       return;
     }
 
-    const updateData = { role: 'artist' };  // Always ensure role is set
+    let updateData = { role: 'artist' } as { role: string; wallet_address?: string };  // Typed to allow optional wallet_address
+
     if (!skip) {
       if (!walletAddress) {
         setError('Wallet address required unless skipping');
