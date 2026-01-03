@@ -64,7 +64,7 @@ export default function ArtistAuth() {
         return;
       }
 
-      router.push('/artist/verify-pending');  // Redirect to pending page
+      router.push(`/artist/verify-pending?email=${encodeURIComponent(email)}`);  // Pass email for resend
     } else {
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
