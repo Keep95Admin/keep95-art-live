@@ -34,7 +34,7 @@ export default function ArtistAuth() {
         password,
         options: {
           data: { username },
-          emailRedirectTo: `${window.location.origin}/auth/confirm`  // Changed to new confirm handler page
+          emailRedirectTo: `${window.location.origin}/artist-auth`  // Redirect confirmation to login page
         }
       });
 
@@ -64,7 +64,7 @@ export default function ArtistAuth() {
         return;
       }
 
-      router.push('/artist/verify-pending');  // Redirect to new pending page
+      router.push('/artist/verify-pending');  // Redirect to pending page
     } else {
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email,
