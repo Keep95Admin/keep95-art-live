@@ -5,9 +5,10 @@ import { redirect } from 'next/navigation';
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-export default async function AuthConfirm({ searchParams }: { searchParams: { [key: string]: string | undefined } }) {
-  const token_hash = searchParams.token_hash;
-  const type = searchParams.type as EmailOtpType | null;
+export default async function AuthConfirm({ searchParams }: { searchParams: Promise<{ [key: string]: string | undefined }> }) {
+  const resolvedSearchParams = await searchParams;
+  const token_hash = resolvedSearchParams.token_hash;
+  const type = resolvedSearchParams.type as EmailOtpType | null;
 
   let message = 'Confirming your email...';
   let errorMsg: string | null = null;
