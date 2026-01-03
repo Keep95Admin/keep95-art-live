@@ -40,7 +40,7 @@ export default function ArtistSetup() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    let profilePictureUrl = '';
+    let profilePicturePath = '';
     if (profilePicture) {
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('profiles')
@@ -50,13 +50,13 @@ export default function ArtistSetup() {
         setLoading(false);
         return;
       }
-      profilePictureUrl = supabase.storage.from('profiles').getPublicUrl(uploadData.path).data.publicUrl;
+      profilePicturePath = uploadData.path;
     }
 
     const updates = {
       bio,
       wallet_address: walletAddress,
-      ...(profilePictureUrl && { profile_picture_url: profilePictureUrl }),
+      ...(profilePicturePath && { profile_picture_url: profilePicturePath }),  // Store path, not URL
       setup_complete: true
     };
 
