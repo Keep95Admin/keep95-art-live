@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server';
 import Image from 'next/image';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import NavBar from '@/components/NavBar';
+import ArtistNavBar from '@/components/ArtistNavBar';
 
 export default async function ArtistDashboard({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -50,10 +50,26 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
     console.error('Drops fetch error:', dropsError);
   }
 
+  // Generate signed URLs for drop images
+  const dropsWithSignedUrls = drops ? await Promise.all(
+    drops.map(async (drop) => {
+      let dropImageSrc = null;
+      if (drop.image_url) {
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from('drops')
+          .createSignedUrl(drop.image_url, 3600);
+        if (!signedError) {
+          dropImageSrc = signedData.signedUrl;
+        }
+      }
+      return { ...drop, dropImageSrc };
+    })
+  ) : [];
+
   return (
     <>
-      <NavBar />
-      <main className="min-h-screen bg-black text-white p-8 pt-24">  {/* Added pt-24 to account for fixed navbar height */}
+      <ArtistNavBar />
+      <main className="min-h-screen bg-black text-white p-8 pt-24">
         <div className="max-w-4xl mx-auto">
           <Link href="/drops" className="text-cyan-400 hover:underline mb-8 inline-block">
             &larr; Back to Drops
@@ -86,14 +102,14 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
               Create New Drop
             </Link>
           </div>
-          {drops && drops.length > 0 ? (
+          {dropsWithSignedUrls.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {drops.map((drop) => (
+              {dropsWithSignedUrls.map((drop) => (
                 <div key={drop.id} className="bg-gray-950 rounded-2xl overflow-hidden border border-gray-800 hover:border-cyan-500 transition-colors">
                   <div className="aspect-square relative">
-                    {drop.image_url ? (
+                    {drop.dropImageSrc ? (
                       <Image
-                        src={drop.image_url}
+                        src={drop.dropImageSrc}
                         alt={drop.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
