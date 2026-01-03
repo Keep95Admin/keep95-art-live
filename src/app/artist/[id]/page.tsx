@@ -19,13 +19,23 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
   }
 
   const { data: profile, error: profileError } = await supabase
-    .from('profiles')  // Switched from 'artists' to 'profiles' for consistency
-    .select('id, username, profile_picture_url, bio')  // Removed alias to avoid TS inference issues
+    .from('profiles')
+    .select('id, username, profile_picture_url, bio')
     .eq('id', id)
     .single();
 
   if (profileError || !profile) {
     return <div>Profile not found</div>;
+  }
+
+  let profilePictureSrc = null;
+  if (profile.profile_picture_url) {
+    const { data: signedData, error: signedError } = await supabase.storage
+      .from('profiles')
+      .createSignedUrl(profile.profile_picture_url, 3600);  // 1 hour expiry
+    if (!signedError) {
+      profilePictureSrc = signedData.signedUrl;
+    }
   }
 
   const { data: drops, error: dropsError } = await supabase
@@ -37,6 +47,22 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
     console.error('Drops fetch error:', dropsError);
   }
 
+  // Generate signed URLs for drop images
+  const dropsWithSignedUrls = drops ? await Promise.all(
+    drops.map(async (drop) => {
+      let dropImageSrc = null;
+      if (drop.image_url) {
+        const { data: signedData, error: signedError } = await supabase.storage
+          .from('drops')
+          .createSignedUrl(drop.image_url, 3600);
+        if (!signedError) {
+          dropImageSrc = signedData.signedUrl;
+        }
+      }
+      return { ...drop, dropImageSrc };
+    })
+  ) : [];
+
   return (
     <main className="min-h-screen bg-black text-white p-8">
       <div className="max-w-4xl mx-auto">
@@ -45,9 +71,9 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
         </Link>
         <div className="flex flex-col md:flex-row gap-8 mb-12">
           <div className="w-48 h-48 bg-gray-950 rounded-full overflow-hidden border border-gray-800 relative flex-shrink-0">
-            {profile.profile_picture_url ? (
+            {profilePictureSrc ? (
               <Image
-                src={profile.profile_picture_url}
+                src={profilePictureSrc}
                 alt={profile.username}
                 fill
                 sizes="192px"
@@ -62,7 +88,9 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
           <div>
             <h1 className="text-4xl font-black mb-4">{profile.username}</h1>
             <p className="text-gray-400 mb-6 inline">{profile.bio || 'No bio available.'}</p>
-            <Link href="/artist/setup" className="text-cyan-400 hover:underline ml-4">Edit Profile</Link>
+            <Link href="/artist/setup" className="text-cyan-400 hover:underline ml-4">
+              Edit Profile
+            </Link>
           </div>
         </div>
         <div className="flex justify-between items-center mb-6">
@@ -71,14 +99,14 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
             Create New Drop
           </Link>
         </div>
-        {drops && drops.length > 0 ? (
+        {dropsWithSignedUrls.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {drops.map((drop) => (
+            {dropsWithSignedUrls.map((drop) => (
               <div key={drop.id} className="bg-gray-950 rounded-2xl overflow-hidden border border-gray-800 hover:border-cyan-500 transition-colors">
                 <div className="aspect-square relative">
-                  {drop.image_url ? (
+                  {drop.dropImageSrc ? (
                     <Image
-                      src={drop.image_url}
+                      src={drop.dropImageSrc}
                       alt={drop.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
