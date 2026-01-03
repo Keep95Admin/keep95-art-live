@@ -18,6 +18,7 @@ export async function POST(request: Request) {
         id: userId,
         email,
         username,
+        role: 'artist',  // Added to enable role-based redirects
         current_mode: 'artist',
         wallet_address: ''
       }
