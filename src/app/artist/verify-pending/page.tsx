@@ -1,22 +1,31 @@
 'use client';
 
-import Image from 'next/image';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
 export default function VerifyPending() {
-  const handleClose = () => {
-    window.close();
-  };
+  const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+        router.push('/artist/setup');
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [router]);
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-8">
-      <div className="mb-8">
-        <Image src="/logo.svg" alt="Keep95 Logo" width={200} height={100} />  {/* Adjust path/size if logo differs */}
+    <main className="min-h-screen bg-black text-white flex items-center justify-center p-8">
+      <div className="max-w-md w-full space-y-6 text-center">
+        <h1 className="text-4xl font-black mb-8">Verification Pending</h1>
+        <p className="text-xl">Check your email for the verification link. Once confirmed, you'll be redirected to setup.</p>
       </div>
-      <h1 className="text-4xl font-black text-center mb-8">Thanks for joining Keep95!</h1>
-      <p className="text-xl text-center mb-8">Check your email for a verification link. Close this page—the email verification will take you to your login.</p>
-      <button onClick={handleClose} className="bg-cyan-500 text-black px-8 py-4 rounded-full font-bold hover:bg-cyan-400">
-        Close
-      </button>
     </main>
   );
 }
