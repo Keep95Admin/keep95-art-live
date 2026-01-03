@@ -43,14 +43,14 @@ export default function ArtistSetup() {
     let profilePictureUrl = '';
     if (profilePicture) {
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('profile-pictures')
+        .from('profiles')
         .upload(`${user.id}/${profilePicture.name}`, profilePicture);
       if (uploadError) {
         setError(uploadError.message);
         setLoading(false);
         return;
       }
-      profilePictureUrl = supabase.storage.from('profile-pictures').getPublicUrl(uploadData.path).data.publicUrl;
+      profilePictureUrl = supabase.storage.from('profiles').getPublicUrl(uploadData.path).data.publicUrl;
     }
 
     const updates = {
