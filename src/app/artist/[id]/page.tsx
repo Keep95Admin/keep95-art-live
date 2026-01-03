@@ -19,8 +19,8 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
   }
 
   const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, username, profile_picture_url, bio')
+    .from('profiles')  // Switched from 'artists' to 'profiles' for consistency
+    .select('id, username, profile_picture_url, bio')  // Removed alias to avoid TS inference issues
     .eq('id', id)
     .single();
 
@@ -61,7 +61,8 @@ export default async function ArtistDashboard({ params }: { params: Promise<{ id
           </div>
           <div>
             <h1 className="text-4xl font-black mb-4">{profile.username}</h1>
-            <p className="text-gray-400 mb-6">{profile.bio || 'No bio available.'}</p>
+            <p className="text-gray-400 mb-6 inline">{profile.bio || 'No bio available.'}</p>
+            <Link href="/artist/setup" className="text-cyan-400 hover:underline ml-4">Edit Profile</Link>
           </div>
         </div>
         <div className="flex justify-between items-center mb-6">
