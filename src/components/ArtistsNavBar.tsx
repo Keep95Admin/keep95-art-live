@@ -24,7 +24,7 @@ async function signOut() {
   redirect('/');
 }
 
-export default async function ArtistNavBar() {
+export default async function ArtistsNavBar() {
   const supabaseResult = await createClient();
 
   // Guard: Default to no user if client is null
@@ -36,9 +36,9 @@ export default async function ArtistNavBar() {
   }
 
   return (
-    <nav className="relative bg-black"> {/* Explicit bg-black */}
+    <div className="relative bg-black">
       <div className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between">
-        <Link href="/" className="text-white font-black text-4xl tracking-tighter"> {/* Explicit text-white */}
+        <Link href="/" className="text-white font-black text-4xl tracking-tighter">
           Keep95.art
         </Link>
         {user && (
@@ -46,7 +46,7 @@ export default async function ArtistNavBar() {
             <form action={signOut}>
               <button
                 type="submit"
-                className="bg-red-600 text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-red-700 transition" {/* Explicit text-white */}
+                className="bg-red-600 text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-red-700 transition"
               >
                 Logout
               </button>
@@ -55,6 +55,6 @@ export default async function ArtistNavBar() {
         )}
       </div>
       <ScannerLine />
-    </nav>
+    </div>
   );
 }
